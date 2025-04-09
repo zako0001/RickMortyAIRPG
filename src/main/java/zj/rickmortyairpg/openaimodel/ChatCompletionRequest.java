@@ -1,4 +1,4 @@
-package zj.rickmortyai.openaimodel;
+package zj.rickmortyairpg.openaimodel;
 
 import lombok.Data;
 

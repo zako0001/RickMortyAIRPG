@@ -1,4 +1,4 @@
-package zj.rickmortyai.config;
+package zj.rickmortyairpg.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

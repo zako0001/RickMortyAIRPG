@@ -1,11 +1,10 @@
-package zj.rickmortyai.config;
+package zj.rickmortyairpg.config;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import zj.rickmortyai.openaimodel.ChatCompletionResponse;
-import zj.rickmortyai.service.OpenAIService;
-import zj.rickmortyai.service.RickMortyApiService;
+import zj.rickmortyairpg.service.OpenAIService;
+import zj.rickmortyairpg.service.RickMortyApiService;
 
 @Component
 public class ApiDataPrinter implements CommandLineRunner {

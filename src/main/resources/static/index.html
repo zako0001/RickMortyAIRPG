@@ -5,21 +5,30 @@
     <title>Rick & Morty AI RPG</title>
 </head>
 <body>
-<br>
-<table>
-    <thead>
-    <tr><th colspan="2">Character</th></tr>
-    </thead>
-    <tbody class="characterInfo">
-    </tbody>
-</table>
-<br>
-<table>
-    <thead>
-    <tr><th colspan="2">Location</th></tr>
-    </thead>
-    <tbody class="locationInfo">
-    </tbody>
-</table>
+<div class="row">
+    <div class="column">
+        <table>
+            <thead>
+            <tr><th colspan="2">Location</th></tr>
+            </thead>
+            <tbody class="locationInfo">
+            </tbody>
+        </table>
+    </div>
+    <div class="column">
+        <div class="chatHistory"></div>
+        <label for="userInput"></label>
+        <input type="text" id="userInput">
+    </div>
+    <div class="column">
+        <table>
+            <thead>
+            <tr><th colspan="2">Character</th></tr>
+            </thead>
+            <tbody class="characterInfo">
+            </tbody>
+        </table>
+    </div>
+</div>
 </body>
 </html>

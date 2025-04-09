@@ -1,12 +1,12 @@
-package zj.rickmortyai.service;
+package zj.rickmortyairpg.service;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import zj.rickmortyai.model.Character;
-import zj.rickmortyai.model.Location;
-import zj.rickmortyai.model.CharacterPage;
-import zj.rickmortyai.model.LocationPage;
+import zj.rickmortyairpg.model.Character;
+import zj.rickmortyairpg.model.Location;
+import zj.rickmortyairpg.model.CharacterPage;
+import zj.rickmortyairpg.model.LocationPage;
 
 import java.util.List;
 

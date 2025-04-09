@@ -1,12 +1,12 @@
-package zj.rickmortyai.controller;
+package zj.rickmortyairpg.controller;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
-import zj.rickmortyai.model.Character;
-import zj.rickmortyai.model.Location;
-import zj.rickmortyai.service.RickMortyApiService;
+import zj.rickmortyairpg.model.Character;
+import zj.rickmortyairpg.model.Location;
+import zj.rickmortyairpg.service.RickMortyApiService;
 
 @RestController
 @CrossOrigin

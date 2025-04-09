@@ -1,4 +1,4 @@
-package zj.rickmortyai.service;
+package zj.rickmortyairpg.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,9 +7,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
-import zj.rickmortyai.openaimodel.ChatCompletionRequest;
-import zj.rickmortyai.openaimodel.ChatCompletionResponse;
-import zj.rickmortyai.openaimodel.Message;
+import zj.rickmortyairpg.openaimodel.ChatCompletionRequest;
+import zj.rickmortyairpg.openaimodel.ChatCompletionResponse;
+import zj.rickmortyairpg.openaimodel.Message;
 
 import java.util.ArrayList;
 import java.util.List;
