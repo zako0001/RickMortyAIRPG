@@ -8,4 +8,5 @@ public class Choice {
     private Message message;
 
 
+
 }
