@@ -1,4 +1,4 @@
-package zj.rickmortyairpg.model;
+package zj.rickmortyairpg.rickandmortyapi;
 
 import lombok.Data;
 

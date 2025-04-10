@@ -1,12 +1,8 @@
-package zj.rickmortyairpg.openaimodel;
+package zj.rickmortyairpg.openaiplatformapi;
 
 import lombok.Data;
 
 @Data
 public class Choice {
-
     private Message message;
-
-
-
 }

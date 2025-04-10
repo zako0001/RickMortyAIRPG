@@ -1,54 +1,50 @@
-package zj.rickmortyairpg.service;
+package zj.rickmortyairpg.rickandmortyapi;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import zj.rickmortyairpg.model.Character;
-import zj.rickmortyairpg.model.Location;
-import zj.rickmortyairpg.model.CharacterPage;
-import zj.rickmortyairpg.model.LocationPage;
 
 import java.util.List;
 
 @Service
-public class RickMortyApiService {
+public class RickAndMortyApiService {
 
     private final WebClient webClient;
 
-    public RickMortyApiService(WebClient webClient) {
-        this.webClient = webClient;
+    public RickAndMortyApiService() {
+        this.webClient = WebClient.create("https://rickandmortyapi.com/api");
     }
 
-    public Mono<List<Character>> fetchCharacters() {
+    public Mono<List<Character>> fetchCharacters(String filter) {
         return webClient
                 .get()
-                .uri("https://rickandmortyapi.com/api/character/?name=summer&status=alive")
+                .uri("/character/" + filter)
                 .retrieve()
                 .bodyToMono(CharacterPage.class)
                 .map(CharacterPage::getResults);
     }
 
-    public Mono<List<Location>> fetchLocations() {
+    public Mono<List<Location>> fetchLocations(String filter) {
         return webClient
                 .get()
-                .uri("https://rickandmortyapi.com/api/location/?name=earth")
+                .uri("/location/" + filter)
                 .retrieve()
                 .bodyToMono(LocationPage.class)
                 .map(LocationPage::getResults);
     }
 
-    public Mono<Character> fetchCharacter() {
+    public Mono<Character> fetchCharacter(short id) {
         return webClient
                 .get()
-                .uri("https://rickandmortyapi.com/api/character/3")
+                .uri("/character/" + id)
                 .retrieve()
                 .bodyToMono(Character.class);
     }
 
-    public Mono<Location> fetchLocation() {
+    public Mono<Location> fetchLocation(short id) {
         return webClient
                 .get()
-                .uri("https://rickandmortyapi.com/api/location/20")
+                .uri("/location/" + id)
                 .retrieve()
                 .bodyToMono(Location.class);
     }
