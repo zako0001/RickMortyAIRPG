@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Error</title>
+    <style>
+        body {
+            background-color: #1E1F22;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            color: darkgoldenrod;
+            text-align: center;
+        }
+        img {
+            opacity: 0;
+            transition: opacity 30s;
+        }
+    </style>
+    <script>
+        function run() {
+            const params = new URLSearchParams(window.location.search);
+            document.querySelector("h1").innerText = params.get("status") + " " + params.get("reason");
+            document.querySelector("p").innerText = window.location.origin + params.get("uri");
+            const img = document.querySelector("img")
+            img.style.opacity = "1";
+        }
+    </script>
+</head>
+<body onload="run()">
+<h1></h1>
+<p></p>
+<img src="/error.png" alt="portal" width="758.4" height="677.6">
+</body>
+</html>
