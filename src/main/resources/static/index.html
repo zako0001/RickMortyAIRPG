@@ -1,25 +1,145 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="css/style.css">
-    <script src="js/script.js" defer></script>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1E1F22;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            color: darkgoldenrod;
+        }
+        input {
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #4D4E51;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            color: darkgoldenrod;
+            margin-top: 10px;
+        }
+        input:focus {
+            outline: 3px solid darkgoldenrod;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: darkgoldenrod;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2B2D30;
+        }
+        div, p {
+            text-align: center;
+            margin: 20px 0 0 0;
+        }
+        img {
+            margin: 0 10px 0 10px;
+            cursor: pointer;
+            border-radius: 8%;
+            transition: all 1s;
+        }
+        button {
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function login() {
+            const username = document.querySelector("input").value;
+            if (username.length < 1) {
+                document.querySelector("p.error").innerText = "Please enter your username to continue.";
+            } else {
+                window.location.href = "/game.html?username=" + username;
+            }
+        }
+        function choose(characterId) {
+            const username = document.querySelector("input").value;
+            const p = document.querySelector("p.error");
+            if (username.length < 1) {
+                p.innerText = "Please enter your new username to continue.";
+            } else if (/[^a-z0-9]/.test(username)) {
+                p.innerText = "Usernames can only contain lowercase letters (a-z) and digits. Please enter another to continue.";
+            } else {
+                fetch(`/player/${username}?characterId=${characterId}`, { method: "POST" })
+                    .then(response => {
+                        if (response.status === 201) {
+                            window.location.href = "/game.html?username=" + username;
+                        } else if (response.status === 409) {
+                            p.innerText = "That username is already taken. Please enter another to continue.";
+                        } else {
+                            p.innerText = "Unexpected error: " + response.status;
+                        }
+                    });
+            }
+        }
+        function select(characterId) {
+            document.querySelectorAll("img").forEach(img => {
+                if (img.alt !== "" + characterId) {
+                    img.style.opacity = "0.5";
+                    img.style.transform = "scale(0.8)"
+                } else {
+                    const names = ["", "", "Morty Smith", "Summer Smith", "Beth Smith", "Jerry Smith"];
+                    document.querySelector("p.selected").innerText = "Selected: " + names[characterId];
+                }
+            });
+        }
+        function unselect() {
+            document.querySelectorAll("img").forEach(img => {
+                img.style.opacity = "";
+                img.style.transform = "scale(1)";
+                document.querySelector("p.selected").innerText = "";
+            });
+        }
+        function run() {
+            const input = document.querySelector("input");
+            input.size = 15;
+            const params = new URLSearchParams(window.location.search);
+            if (params.has("error") && params.has("username")) {
+                const status = params.get("error");
+                input.value = params.get("username");
+                const p = document.querySelector("p");
+                if (status === "404") {
+                    p.innerText = "That username doesn't exist. Please enter your username to continue.";
+                } else {
+                    p.innerText = "Unexpected error: " + status;
+                }
+            }
+        }
+    </script>
     <title>Rick & Morty AI RPG</title>
 </head>
-<body>
-<br>
-<table>
-    <thead>
-    <tr><th colspan="2">Character</th></tr>
-    </thead>
-    <tbody class="characterInfo">
-    </tbody>
-</table>
-<br>
-<table>
-    <thead>
-    <tr><th colspan="2">Location</th></tr>
-    </thead>
-    <tbody class="locationInfo">
-    </tbody>
-</table>
+<body onload="run()">
+
+<div>
+<label style="display: block">
+    Username: <input type="text" maxlength="15">
+</label>
+</div>
+
+<div>
+<button type="button" onclick="login()">Log in</button> or select a character to start your adventure!
+</div>
+
+<p style="color: red" class="error"></p>
+
+<div>
+<img src="https://rickandmortyapi.com/api/character/avatar/2.jpeg" alt="2" onmouseover="select(2)" onmouseout="unselect()" onclick="choose(2)">
+<img src="https://rickandmortyapi.com/api/character/avatar/3.jpeg" alt="3" onmouseover="select(3)" onmouseout="unselect()" onclick="choose(3)">
+<img src="https://rickandmortyapi.com/api/character/avatar/4.jpeg" alt="4" onmouseover="select(4)" onmouseout="unselect()" onclick="choose(4)">
+<img src="https://rickandmortyapi.com/api/character/avatar/5.jpeg" alt="5" onmouseover="select(5)" onmouseout="unselect()" onclick="choose(5)">
+</div>
+
+<p class="selected"></p>
+
 </body>
+<script>
+
+</script>
 </html>

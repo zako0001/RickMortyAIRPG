@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400..700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #1E1F22;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            color: darkgoldenrod;
+        }
+        .container {
+            display: grid;
+            grid-template-rows: 1fr;
+            grid-template-columns: 1fr 2fr 1fr;
+            justify-items: center;
+        }
+        .left {
+            justify-self: left;
+        }
+        .middle {
+            text-align: center;
+        }
+        .right {
+            justify-self: right;
+        }
+        table {
+            text-transform: uppercase;
+            background-color: #2B2D30;
+            border-spacing: 15px;
+            border-radius: 8px;
+            margin: 10px;
+        }
+        td:nth-child(2n-1) {
+            font-weight: bold;
+        }
+        .chatHistory {
+            height: 90dvh;
+            overflow-y: auto;
+            scrollbar-color: darkgoldenrod #1E1F22;
+        }
+        p {
+            text-align: left;
+        }
+        a {
+            color: darkgreen;
+        }
+        input {
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: #4D4E51;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            color: darkgoldenrod;
+            margin-top: 10px;
+        }
+        input:focus {
+            outline: 3px solid darkgoldenrod;
+        }
+        :disabled {
+            cursor: wait;
+        }
+        button {
+            cursor: pointer;
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            background-color: darkgoldenrod;
+            font-family: Orbitron, monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #2B2D30;
+        }
+        button:disabled {
+            background-color: #4D4E51;
+        }
+        img {
+            border-radius: 8px;
+        }
+    </style>
+    <script>
+        let gameInfo;
+        function formatMessage(m) {
+            const i = m.indexOf("{");
+            if (i === -1) return m;
+            const j = m.indexOf("$");
+            const k = m.indexOf("}");
+            const start = m.slice(0, i) + '<a href="javascript:void(0)" onclick="fillCharacter(' + m.slice(i + 1, j) + ')">';
+            const end = m.slice(j + 1, k) + "</a>" + m.slice(k + 1);
+            return formatMessage(start + end);
+        }
+        function addMessage(content) {
+            const p = document.createElement("p");
+            p.innerHTML = formatMessage(content);
+            document.querySelector(".chatHistory").append(p);
+            p.scrollIntoView();
+        }
+        function fillInfo() {
+            gameInfo.messages.forEach(message => addMessage(message.content));
+            const character = gameInfo.characters["id" + gameInfo.characterId];
+            fillCharacter(character.id);
+            document.querySelector("label").innerText = character.name + ": ";
+            document.querySelector(".info").innerHTML = `
+            <tr><td>Username</td><td>${gameInfo.username}</td></tr>
+            <tr><td>Character</td><td><a href="javascript:void(0)" onclick="fillCharacter(${character.id})">${character.name}</a></td></tr>
+            <tr><td>Location</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.location.id})">${character.location.name}</a></td></tr>
+            `;
+        }
+        function fillCharacter(characterId) {
+            const character = gameInfo.characters["id" + characterId];
+            document.querySelector(".selected").innerHTML = `
+            <tr><td align="center" colspan="2">${character.name}</td></tr>
+            <tr><td align="center" colspan="2"><img src="${character.image}" alt="image"></td></tr>
+            <tr><td>Species</td><td>${character.species}</td></tr>
+            <tr><td>Gender</td><td>${character.gender}</td></tr>
+            <tr><td>Status</td><td>${character.status}</td></tr>
+            <tr><td>Origin</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.origin.id})">${character.origin.name}</a></td></tr>
+            <tr><td>Location</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.location.id})">${character.location.name}</a></td></tr>
+            `;
+        }
+        function fillLocation(locationId) {
+            const location = gameInfo.locations["id" + locationId];
+            document.querySelector(".selected").innerHTML = `
+            <tr><td align="center" colspan="2">${location.name}</td></tr>
+            <tr><td>Type</td><td>${location.type}</td></tr>
+            <tr><td>Dimension</td><td>${location.dimension}</td></tr>
+            `;
+        }
+        function talk() {
+            const button = document.querySelector(".talk");
+            const input = document.querySelector("input#userInput");
+            const value = input.value;
+            button.disabled = true;
+            input.disabled = true;
+            fetch(`player/${gameInfo.username}/messages`, {
+                method: "POST",
+                body: `{"content":"${value}"}`,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }).then(response => response.json()).then(data => {
+                data.forEach(message => addMessage(message.content));
+                button.disabled = false;
+                input.disabled = false;
+                input.value = "";
+                input.focus();
+            });
+        }
+        async function run() {
+            const params = new URLSearchParams(window.location.search);
+            if (!params.has("username")) {
+                window.location.replace("/");
+                return;
+            }
+            const response = await fetch("http://localhost:8080/player/" + params.get("username"));
+            if (response.status !== 200) {
+                window.location.replace("/?error=" + response.status + "&username=" + params.get("username"));
+                return;
+            }
+            response.json().then(data => {
+                gameInfo = data;
+                fillInfo();
+            });
+            const input = document.querySelector("input#userInput");
+            input.size = 50;
+            input.addEventListener("keydown", event => {
+                if (event.key === "Enter") {
+                    document.querySelector("button.talk").click();
+                }
+            });
+        }
+    </script>
+    <title>Rick & Morty AI RPG</title>
+</head>
+<body onload="run()">
+<div class="container">
+    <div class="left">
+        <table class="info"></table>
+    </div>
+    <div class="middle">
+        <div class="chatHistory"></div>
+        <label for="userInput"></label>
+        <input type="text" id="userInput" autofocus>
+        <button type="button" class="talk" onclick="talk()">Talk</button>
+    </div>
+    <div class="right">
+        <table class="selected"></table>
+    </div>
+</div>
+</body>
+</html>

@@ -1,4 +1,4 @@
-package zj.rickmortyai;
+package zj.rickmortyairpg;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
