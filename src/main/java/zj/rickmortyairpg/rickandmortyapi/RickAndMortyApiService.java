@@ -1,8 +1,10 @@
 package zj.rickmortyairpg.rickandmortyapi;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import zj.rickmortyairpg.persistance.GameCharacter;
 
 import java.util.List;
 
@@ -15,22 +17,20 @@ public class RickAndMortyApiService {
         this.webClient = WebClient.create("https://rickandmortyapi.com/api");
     }
 
-    public Mono<List<Character>> fetchCharacters(String filter) {
+    public Mono<List<GameCharacter>> fetchCharactersByIds(String commaSeparatedIds) {
         return webClient
                 .get()
-                .uri("/character/" + filter)
+                .uri("/character/" + commaSeparatedIds)
                 .retrieve()
-                .bodyToMono(CharacterPage.class)
-                .map(CharacterPage::getResults);
+                .bodyToMono(new ParameterizedTypeReference<>() {});
     }
 
-    public Mono<List<Location>> fetchLocations(String filter) {
+    public Mono<List<Location>> fetchLocationsByIds(String commaSeparatedIds) {
         return webClient
                 .get()
-                .uri("/location/" + filter)
+                .uri("/location/" + commaSeparatedIds)
                 .retrieve()
-                .bodyToMono(LocationPage.class)
-                .map(LocationPage::getResults);
+                .bodyToMono(new ParameterizedTypeReference<>() {});
     }
 
     public Mono<Character> fetchCharacter(short id) {

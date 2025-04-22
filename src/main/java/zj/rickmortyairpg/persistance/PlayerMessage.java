@@ -1,26 +1,22 @@
 package zj.rickmortyairpg.persistance;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @Entity
-public class Incident {
-
+public class PlayerMessage {
+    @JsonIgnore
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @JsonIgnore
     @ManyToOne(optional = false)
-    private User user;
-    @OneToOne
-    private CharacterInfo characterInfo;
+    private Player player;
+    @JsonIgnore
+    @Column(nullable = false)
     private String role;
+    @Column(nullable = false, columnDefinition = "VARCHAR(512)")
     private String content;
-
-    public Incident(String role, String content) {
-        this.role = role;
-        this.content = content;
-    }
 }

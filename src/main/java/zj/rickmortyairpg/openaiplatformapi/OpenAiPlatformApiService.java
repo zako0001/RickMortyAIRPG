@@ -20,13 +20,26 @@ public class OpenAiPlatformApiService {
     }
 
     public Mono<ChatCompletionResponse> makeRequest(List<Message> messages) {
+
+        // Use commented out code as alternative for testing UI without using tokens.
+
+        /*try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ignored) {}
+        Message message = new Message("assistant", "{1$Rick}: *Burps.* \"No {2$Morty}, you can't burrow the Space Cruiser.\"");
+        Choice choice = new Choice();
+        choice.setMessage(message);
+        ChatCompletionResponse response = new ChatCompletionResponse();
+        response.setChoices(List.of(choice));
+        return Mono.just(response);*/
+
         ChatCompletionRequest request = new ChatCompletionRequest("gpt-4o-mini", messages, 5);
         return webClient
                 .post()
                 .uri("https://api.openai.com/v1/chat/completions")
                 .header("Authorization", "Bearer " + API_KEY)
-                .contentType(MediaType.APPLICATION_JSON) // Is this necessary?
-                .accept(MediaType.APPLICATION_JSON) // Is this necessary?
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(ChatCompletionResponse.class);
