@@ -45,10 +45,11 @@ public class WebAppService {
     private String getDeveloperMessage(int characterId) {
         List<String> characters = new ArrayList<>(List.of("{2$Morty}", "{3$Summer}", "{4$Beth}", "{5$Jerry}"));
         List<String> options = new ArrayList<>(characters);
-        options.remove(characterId - 2);
+        String user = options.remove(characterId - 2);
         return "You deliver responses in a text-based Rick and Morty RPG." +
-                "The user role-plays as " + characters.get(characterId - 2) +
+                "The user role-plays as " + user +
                 ", and you role-play as " + String.join(", ", options) + ", and {1$Rick}." +
+                "You will not speak as " + user + "." +
                 "Each response starts with the character you choose for that response and a colon." +
                 "The response is formatted with \"quote\", *action*, and {id$name}." +
                 "You deliver one response at a time without giving options.\n\n" +

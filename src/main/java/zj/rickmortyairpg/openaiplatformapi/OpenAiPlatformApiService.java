@@ -33,7 +33,7 @@ public class OpenAiPlatformApiService {
         response.setChoices(List.of(choice));
         return Mono.just(response);*/
 
-        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4o-mini", messages, 5);
+        ChatCompletionRequest request = new ChatCompletionRequest("gpt-4o-mini", messages, 1000);
         return webClient
                 .post()
                 .uri("https://api.openai.com/v1/chat/completions")
