@@ -5,10 +5,12 @@ import zj.rickmortyairpg.persistance.Player;
 import zj.rickmortyairpg.persistance.PlayerGameCharacter;
 import zj.rickmortyairpg.persistance.PlayerMessage;
 import zj.rickmortyairpg.rickandmortyapi.Location;
+import zj.rickmortyairpg.rickandmortyfandom.Item;
 
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -19,6 +21,7 @@ public class GameInfo {
     private Map<String, PlayerGameCharacter> characters;
     private Map<String, Location> locations;
     private List<PlayerMessage> messages;
+    private Map<String, Item> inventory;
 
     public GameInfo(Player player) {
         this.username = player.getUsername();
@@ -37,6 +40,10 @@ public class GameInfo {
                 .filter(pm -> !pm.getRole().equals("developer"))
                 .sorted(Comparator.comparing(PlayerMessage::getId))
                 .toList();
+        this.inventory = player
+                .getInventory()
+                .stream()
+                .collect(Collectors.toMap(item -> "id" + item.getId(), item -> item));
     }
 
 }

@@ -21,8 +21,10 @@ public class Location {
 
     @JsonSetter("name")
     public void setShortName(String name) {
-        if (name.startsWith("Earth (")) {
+        if (name.startsWith("Earth (") || name.endsWith(" Earth")) {
             this.name = "Earth";
+        } else {
+            this.name = name;
         }
     }
 

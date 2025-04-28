@@ -4,9 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 @MappedSuperclass
 public class Character {
+
     @Id
     private Short id;
     private String name;
@@ -28,4 +31,12 @@ public class Character {
     })
     private SimpleLocation location;
     private String image;
+
+    public String getReference() {
+        if (List.of((short) 1, (short) 2, (short) 3, (short) 4, (short) 5).contains(this.id)) {
+            return "{" + this.id + "$" + this.name.substring(0, name.indexOf(" ")) + "}";
+        } else {
+            return "{" + this.id + "$" + this.name + "}";
+        }
+    }
 }

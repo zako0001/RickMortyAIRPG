@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import zj.rickmortyairpg.openaiplatformapi.Message;
 import zj.rickmortyairpg.rickandmortyapi.Location;
+import zj.rickmortyairpg.rickandmortyfandom.Item;
 
 import java.util.*;
 
@@ -26,6 +27,9 @@ public class Player {
     @EqualsAndHashCode.Exclude
     @ManyToMany
     private Set<Location> locations;
+    @EqualsAndHashCode.Exclude
+    @ManyToMany
+    private Set<Item> inventory;
 
     public Player(String username, short characterId) {
         this.username = username;

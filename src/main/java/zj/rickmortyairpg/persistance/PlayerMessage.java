@@ -17,6 +17,6 @@ public class PlayerMessage {
     @JsonIgnore
     @Column(nullable = false)
     private String role;
-    @Column(nullable = false, columnDefinition = "VARCHAR(512)")
+    @Column(nullable = false, columnDefinition = "VARCHAR(2048)")
     private String content;
 }

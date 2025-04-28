@@ -37,7 +37,15 @@
         td:nth-child(2n-1) {
             font-weight: bold;
         }
-        .chatHistory {
+        table.search td:nth-child(2n-1) {
+            font-weight: normal;
+        }
+        tr.hoverable:hover {
+            cursor: pointer;
+            background-color: darkgoldenrod;
+            color: #2B2D30;
+        }
+        .outline {
             height: 90dvh;
             overflow-y: auto;
             scrollbar-color: darkgoldenrod #1E1F22;
@@ -45,10 +53,11 @@
         p {
             text-align: left;
         }
-        a {
-            color: darkgreen;
+        span.link:hover {
+            background-color: darkgoldenrod;
+            color: #2B2D30;
         }
-        input {
+        input[type="text"] {
             border: none;
             border-radius: 8px;
             padding: 10px;
@@ -57,8 +66,12 @@
             font-size: 16px;
             color: darkgoldenrod;
             margin-top: 10px;
+            width: 50px;
         }
-        input:focus {
+        input#userInput {
+            width: 500px;
+        }
+        input[type="text"]:focus {
             outline: 3px solid darkgoldenrod;
         }
         :disabled {
@@ -69,86 +82,145 @@
             border: none;
             border-radius: 8px;
             padding: 10px;
+            margin: 5px;
             background-color: darkgoldenrod;
             font-family: Orbitron, monospace;
             font-size: 16px;
             font-weight: bold;
             color: #2B2D30;
         }
+        table button {
+            margin: 0;
+        }
         button:disabled {
             background-color: #4D4E51;
         }
-        img {
+        img.portrait {
             border-radius: 8px;
+        }
+        div#portal {
+            width: 700px;
+            height: 700px;
+            transform: scale(0.01);
+            transition: all 2s ease-out;
+            mask-image: radial-gradient(circle, black 50%, transparent 60%);
+        }
+        fieldset {
+            border-color: darkgoldenrod;
         }
     </style>
     <script>
+        const audio = new Audio("portal.mp3");
+        const dimensions = ['5-126','C-131','C-137','C-35','C-500A','Chair Dimension','Cromulon Dimension','Cronenberg Dimension','D-99','D716','D716-B','D716-C','Eric Stoltz Mask Dimension','Evil Rick\'s Target Dimension','Fantasy Dimension','Fascist Dimension','Fascist Shrimp Dimension','Fascist Teddy Bear Dimension','Giant Telepathic Spiders Dimension','J-22','J19ζ7','K-22','K-83','Magic Dimension','Merged Dimension','Parmesan Dimension','Phone Dimension','Pizza Dimension','Post-Apocalyptic Dimension','Testicle Monster Dimension','Tusk Dimension','Wasp Dimension'];
+        const names = ['Abadango','Alien Acid Plant','Alien Day Spa','Alphabetrium','Anatomy Park','Avian Planet','Bepis 9','Bird World','Birdperson\'s Consciousness','Blips and Chitz','Citadel of Ricks','Defiance\'s Base','Defiance\'s Ship','Detoxifier','Dorian 5','Draygon','Earth','Elemental Rings','Fantasy World','Ferkus 9','Forbodulon Prime','France','Froopyland','Gaia','Galactic Federation Prison','Gazorpazorp','Gear World','Giant\'s Town','Girvonesk','Glaagablaaga','Globaflyn','Glorzo Asteroid','Gorgon Quadrant','Gramuflack','Greasy Grandma World','Gromflom Prime','Hamster in Butt World','Heist-Con','Heistotron Base','Hell','Hideout Planet','Immortality Field Resort','Interdimensional Cable','Interdimensional Customs','Jerryboree','Krootabulon','Kyle\'s Teenyverse','Larva Alien\'s Planet','Mega Gargantuan Kingdom','Merged Universe','Midland Quasar','Monogatron Mothership','Morglutz','Morty','Morty’s Story','Mount Olympus','Mount Space Everest','Mr. Goldenfold\'s dream','Mr. Meeseeks Box','NX-5 Planet Remover','Narnia Dimension','Near-Duplicate Reality','New Improved Galactic Federation Quarters','Non-Diegetic Alternative Reality','Normal Size Bug Dimension','Nuptia 4','Pawn Shop Planet','Planet Squanch','Plitzville Montana','Plopstar','Pluto','Purge Planet','Resort Planet','Rick and Two Crows Planet','Rick\'s Battery Microverse','Rick\'s Consciousness','Rick\'s Memories','Ricks’s Story','Roy: A Life Well Lived','Signus 5 Expanse','Slartivart','Snake Planet','Snuffles\' Dream','Space','Space Tahoe','St. Gloopy Noops Hospital','Story Train','Testicle Monster Dimension','The Menagerie','The Ocean','Tickets Please Guy Nightmare','Trunk World','Unity\'s Planet','Venzenulon 7','Vindicator\'s Base','Worldender\'s lair','Z. Q. P. D.','Zeep Xanflorp\'s Miniverse','Zigerion\'s Base','Árboles Mentirosos'];
+        const types = ['Acid Plant','Arcade','Artificially generated world','Asteroid','Base','Box','Cluster','Consciousness','Convention','Country','Customs','Daycare','Death Star','Diegesis','Dimension','Dream','Dwarf planet (Celestial Dwarf)','Elemental Rings','Fantasy town','Game','Hell','Human','Liquid','Machine','Memory','Menagerie','Microverse','Miniverse','Mount','Nightmare','Non-Diegetic Alternative Reality','Planet','Police Department','Quadrant','Quasar','Reality','Resort','Spa','Space','Space station','Spacecraft','TV','Teenyverse','Woods'];
         let gameInfo;
-        function formatMessage(m) {
-            const i = m.indexOf("{");
-            if (i === -1) return m;
-            const j = m.indexOf("$");
-            const k = m.indexOf("}");
-            const start = m.slice(0, i) + '<a href="javascript:void(0)" onclick="fillCharacter(' + m.slice(i + 1, j) + ')">';
-            const end = m.slice(j + 1, k) + "</a>" + m.slice(k + 1);
-            return formatMessage(start + end);
-        }
+        let showOpenPortalButton = false;
         function addMessage(content) {
             const p = document.createElement("p");
-            p.innerHTML = formatMessage(content);
-            document.querySelector(".chatHistory").append(p);
+            p.innerHTML = formatMessage(content.replace(/\n/g, "</p><p>"));
+            document.querySelector(".outline").append(p);
             p.scrollIntoView();
         }
-        function fillInfo() {
-            gameInfo.messages.forEach(message => addMessage(message.content));
-            const character = gameInfo.characters["id" + gameInfo.characterId];
-            fillCharacter(character.id);
-            document.querySelector("label").innerText = character.name + ": ";
-            document.querySelector(".info").innerHTML = `
-            <tr><td>Username</td><td>${gameInfo.username}</td></tr>
-            <tr><td>Character</td><td><a href="javascript:void(0)" onclick="fillCharacter(${character.id})">${character.name}</a></td></tr>
-            <tr><td>Location</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.location.id})">${character.location.name}</a></td></tr>
-            `;
+        function check(updateId) {
+            const mark = document.querySelector("span.check#updateId" + updateId);
+            mark.innerText = mark.innerText === "⛔️" ? "✅" : "⛔️";
+        }
+        function displayButtomMiddle(divId) {
+            document.querySelectorAll(".blockable").forEach(div => div.style.display = "none");
+            const div = document.querySelector("div#"+divId);
+            div.style.display = "block";
+            const outline = document.querySelector("div.outline");
+            switch (divId) {
+                case "talk":
+                    showOpenPortalButton = false;
+                    outline.innerHTML = "";
+                    gameInfo.messages.forEach(message => addMessage(message.content));
+                    break;
+                case "filterLocations":
+                    showOpenPortalButton = true;
+                    break;
+                case "bring":
+                    showOpenPortalButton = false;
+                    break;
+            }
         }
         function fillCharacter(characterId) {
             const character = gameInfo.characters["id" + characterId];
             document.querySelector(".selected").innerHTML = `
             <tr><td align="center" colspan="2">${character.name}</td></tr>
-            <tr><td align="center" colspan="2"><img src="${character.image}" alt="image"></td></tr>
+            <tr><td align="center" colspan="2"><img class="portait" src="${character.image}" alt="image"></td></tr>
             <tr><td>Species</td><td>${character.species}</td></tr>
             <tr><td>Gender</td><td>${character.gender}</td></tr>
             <tr><td>Status</td><td>${character.status}</td></tr>
-            <tr><td>Origin</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.origin.id})">${character.origin.name}</a></td></tr>
-            <tr><td>Location</td><td><a href="javascript:void(0)" onclick="fillLocation(${character.location.id})">${character.location.name}</a></td></tr>
+            <tr><td>Origin</td><td><span class="link" onclick="fillLocation(${character.origin.id})">${character.origin.name}</span></td></tr>
+            <tr><td>Location</td><td><span class="link" onclick="fillLocation(${character.location.id})">${character.location.name}</span></td></tr>
+            `;
+        }
+        function fillInfo() {
+            const character = gameInfo.characters["id" + gameInfo.characterId];
+            document.querySelector("label").innerText = character.name.slice(0, character.name.indexOf(" ")) + ": ";
+            document.querySelector(".info").innerHTML = `
+            <tr><td>Username</td><td>${gameInfo.username}</td></tr>
+            <tr><td>Character</td><td><span class="link" onclick="fillCharacter(${character.id})">${character.name}</span></td></tr>
+            <tr><td>Location</td><td><span class="link" onclick="fillLocation(${character.location.id})">${character.location.name}</span></td></tr>
+            `;
+        }
+        function fillInventory() {
+            document.querySelector("table#inventory").innerHTML = `
+            <tr><td>INVENTORY</td></tr>
+            <tr><td><span class="link" onclick="fillItem(${1})">PORTAL GUN</span></td></tr>
+            `;
+        }
+        function fillItem(itemId) {
+            const item = gameInfo.inventory["id" + itemId];
+            document.querySelector(".selected").innerHTML = `
+            <tr><td align="center" colspan="2">${item.name}</td></tr>
+            <tr><td align="center" colspan="2"><img class="portrait" src="${item.image}" alt="image"></td></tr>
+            <tr><td>Type</td><td>${item.type}</td></tr>
+            <tr><td>Purpose</td><td>${item.purpose}</td></tr>
+            <tr><td align="center" colspan="2"><button type="button" id="portalGun" onclick="displayButtomMiddle('filterLocations')">USE</button></td></tr>
             `;
         }
         function fillLocation(locationId) {
             const location = gameInfo.locations["id" + locationId];
-            document.querySelector(".selected").innerHTML = `
+            let str = `
             <tr><td align="center" colspan="2">${location.name}</td></tr>
             <tr><td>Type</td><td>${location.type}</td></tr>
             <tr><td>Dimension</td><td>${location.dimension}</td></tr>
             `;
+            if (showOpenPortalButton && locationId !== gameInfo.characters["id" + gameInfo.characterId].location.id) {
+                str += `<tr><td align="center" colspan="2"><button type="button" onclick="openPortal(${locationId})">OPEN POTAL</button></td></tr>`;
+            }
+            document.querySelector(".selected").innerHTML = str;
         }
-        function talk() {
-            const button = document.querySelector(".talk");
-            const input = document.querySelector("input#userInput");
-            const value = input.value;
-            button.disabled = true;
-            input.disabled = true;
-            fetch(`player/${gameInfo.username}/messages`, {
-                method: "POST",
-                body: `{"content":"${value}"}`,
-                headers: {
-                    "Content-Type": "application/json",
+        function formatMessage(m) {
+            const start = m.indexOf("{");
+            if (start === -1) return m;
+            const end = m.indexOf("}");
+            const middle = m.slice(start + 1, end);
+            const c = middle.indexOf("$");
+            const l = middle.indexOf("@");
+            const i = middle.indexOf("£");
+            const delimiter = Math.max(c, l, i);
+            const type = delimiter === c ? 'Character' : delimiter === l ? 'Location' : 'Item';
+            const link = type + "(" + middle.slice(0, delimiter) + ')">' + middle.slice(delimiter + 1);
+            return formatMessage(m.slice(0, start) + '<span class="link" onclick="fill' + link + "</span>" + m.slice(end + 1));
+        }
+        async function openPortal(locationId) {
+            displayButtomMiddle("bring");
+            fillLocation(locationId);
+            let str = `<div id="portal"><p align="center">PORTAL TO ${gameInfo.locations["id" + locationId].name.toUpperCase()}</p><img src="portal.gif" alt="portal"></div><fieldset><legend>BRING</legend>`;
+            for (const characterId in gameInfo.characters) {
+                if (characterId !== "id" + gameInfo.characterId) {
+                    const character = gameInfo.characters[characterId];
+                    str += `<span class="check" id="${'updateId' + character.updateId}">⛔️</span><span class="link" onclick="check(${character.updateId})">${character.name}</span>  `;
                 }
-            }).then(response => response.json()).then(data => {
-                data.forEach(message => addMessage(message.content));
-                button.disabled = false;
-                input.disabled = false;
-                input.value = "";
-                input.focus();
-            });
+            }
+            document.querySelector("div.outline").innerHTML = str.slice(0, str.length - 2) + "</fieldset>";
+            document.querySelector("div#bring").innerHTML = `<button type="button" onclick="teleport(${locationId})">GO THROUGH</button><button type="button" onclick="location.reload()">CLOSE PORTAL</button>`;
+            await audio.play();
+            document.querySelector("div#portal").style.transform = "scale(1)";
         }
         async function run() {
             const params = new URLSearchParams(window.location.search);
@@ -156,22 +228,91 @@
                 window.location.replace("/");
                 return;
             }
-            const response = await fetch("http://localhost:8080/player/" + params.get("username"));
+            const response = await fetch("http://localhost:8080/players/" + params.get("username"));
             if (response.status !== 200) {
                 window.location.replace("/?error=" + response.status + "&username=" + params.get("username"));
                 return;
             }
-            response.json().then(data => {
-                gameInfo = data;
-                fillInfo();
-            });
-            const input = document.querySelector("input#userInput");
-            input.size = 50;
-            input.addEventListener("keydown", event => {
+            gameInfo = await response.json();
+            fillInfo();
+            fillInventory();
+            displayButtomMiddle("talk");
+            document.querySelector("input#userInput").addEventListener("keydown", event => {
                 if (event.key === "Enter") {
                     document.querySelector("button.talk").click();
                 }
             });
+            let name = "";
+            let type = "";
+            let dimension = "";
+            names.forEach(n => name += `<option value="${n}"></option>`);
+            types.forEach(t => type += `<option value="${t}"></option>`);
+            dimensions.forEach(d => dimension += `<option value="${d}"></option>`);
+            document.querySelector("datalist#names").innerHTML = name;
+            document.querySelector("datalist#types").innerHTML = type;
+            document.querySelector("datalist#dimensions").innerHTML = dimension;
+        }
+        function search() {
+            const name = document.querySelector("input#name").value;
+            const type = document.querySelector("input#type").value;
+            const dimension = document.querySelector("input#dimension").value;
+            if (name === "" && type === "" && dimension === "") return;
+            const params = new URLSearchParams();
+            params.set("name", name);
+            params.set("type", type);
+            params.set("dimension", dimension);
+            fetch("/locations?" + params).then(response => {
+                const outline = document.querySelector("div.outline");
+                if (!response.ok) {
+                    outline.innerHTML = "<p>No results.</p>";
+                    return;
+                }
+                response.json().then(data => {
+                    let str = '<center><table class="search"><tr><td></td><td><strong>Type</strong></td><td><strong>Dimension</strong></td></tr>';
+                    data.forEach(l => {
+                        gameInfo.locations["id" + l.id] = l;
+                        str += `<tr class="hoverable" onclick="fillLocation(${l.id})"><td>${l.name}</td><td>${l.type}</td><td>${l.dimension}</td></tr>`;
+                    });
+                    outline.innerHTML = str + "</table></center>";
+                });
+            });
+        }
+        function talk() {
+            const input = document.querySelector("input#userInput");
+            const value = input.value;
+            if (value === "") return;
+            const button = document.querySelector(".talk");
+            button.disabled = true;
+            input.disabled = true;
+            fetch(`players/${gameInfo.username}/messages`, {
+                method: "POST",
+                body: `{"content":"${value}"}`,
+                headers: {
+                    "Content-Type": "application/json",
+                }
+            }).then(response => response.json()).then(data => {
+                data.forEach(message => {
+                    gameInfo.messages.push(message);
+                    addMessage(message.content);
+                });
+                button.disabled = false;
+                input.disabled = false;
+                input.value = "";
+                input.focus();
+            });
+        }
+        function teleport(locationId) {
+            const updateIds = [gameInfo.characters["id" + gameInfo.characterId].updateId];
+            document.querySelectorAll(".check").forEach(value => {
+                if (value.innerText === "✅") {
+                    updateIds.push(Number(value.id.slice(8)))
+                }
+            });
+            fetch("/players/" + gameInfo.username + "/location?id=" + locationId, {
+                method: "PUT",
+                body: JSON.stringify(updateIds),
+                headers: { "Content-Type": "application/json" }
+            }).then(response => location.reload());
         }
     </script>
     <title>Rick & Morty AI RPG</title>
@@ -180,12 +321,29 @@
 <div class="container">
     <div class="left">
         <table class="info"></table>
+        <table id="inventory"></table>
     </div>
     <div class="middle">
-        <div class="chatHistory"></div>
-        <label for="userInput"></label>
-        <input type="text" id="userInput" autofocus>
-        <button type="button" class="talk" onclick="talk()">Talk</button>
+        <div class="outline"></div>
+        <div id="talk" class="blockable">
+            <label for="userInput"></label>
+            <input type="text" id="userInput">
+            <button type="button" class="talk" onclick="talk()">TALK</button>
+        </div>
+        <div id="filterLocations" class="blockable">
+            <label for="name">Name: </label>
+            <input type="text" list="names" id="name">
+            <datalist id="names"></datalist>
+            <label for="type">Type: </label>
+            <input type="text" list="types" id="type">
+            <datalist id="types"></datalist>
+            <label for="dimension">Dimension: </label>
+            <input type="text" list="dimensions" id="dimension">
+            <datalist id="dimensions"></datalist>
+            <button type="button" onclick="search()">SEARCH</button>
+            <button type="button" onclick="displayButtomMiddle('talk')">CANCEL</button>
+        </div>
+        <div id="bring" class="blockable"></div>
     </div>
     <div class="right">
         <table class="selected"></table>

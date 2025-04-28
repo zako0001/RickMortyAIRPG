@@ -2,18 +2,25 @@ package zj.rickmortyairpg.rickandmortyapi;
 
 import com.fasterxml.jackson.annotation.JsonSetter;
 import jakarta.persistence.Embeddable;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
 @Embeddable
 public class SimpleLocation {
 
     private String name;
     private Short id;
+
+    public SimpleLocation(String name, String dimension, Short id) {
+        if (name.equals("Earth")) {
+            this.name = "Earth (" + (dimension.equals("Parmesan Dimension") ? "Home" : dimension) + ")";
+        } else {
+            this.name = name;
+        }
+        this.id = id;
+    }
 
     @JsonSetter("url")
     public void setUrl(String url) {

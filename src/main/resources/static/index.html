@@ -67,7 +67,7 @@
             } else if (/[^a-z0-9]/.test(username)) {
                 p.innerText = "Usernames can only contain lowercase letters (a-z) and digits. Please enter another to continue.";
             } else {
-                fetch(`/player/${username}?characterId=${characterId}`, { method: "POST" })
+                fetch(`/players/${username}?characterId=${characterId}`, { method: "POST" })
                     .then(response => {
                         if (response.status === 201) {
                             window.location.href = "/game.html?username=" + username;

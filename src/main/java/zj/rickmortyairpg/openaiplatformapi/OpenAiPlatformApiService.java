@@ -26,7 +26,7 @@ public class OpenAiPlatformApiService {
         /*try {
             Thread.sleep(1000);
         } catch (InterruptedException ignored) {}
-        Message message = new Message("assistant", "{1$Rick}: *Burps.* \"No {2$Morty}, you can't burrow the Space Cruiser.\"");
+        Message message = new Message("assistant", "{1$Rick}: *Burps.* \"No {2$Morty}, you can't borrow the Space Cruiser.\"");
         Choice choice = new Choice();
         choice.setMessage(message);
         ChatCompletionResponse response = new ChatCompletionResponse();
